@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mi día</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f4ee;--card:#fff;--ink:#1e2a32;--mute:#5b6b75;--pri:#1f7a6d;--pri-ink:#fff;--ok:#2e9e4f;--line:#d9d4c7;--warn:#e8a33d}
+:root[data-theme="dark"]{--bg:#161c20;--card:#222b31;--ink:#f0efe9;--mute:#a7b3ba;--pri:#46b8a8;--pri-ink:#0d1a18;--ok:#5fd183;--line:#38454d;--warn:#e8b25a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161c20;--card:#222b31;--ink:#f0efe9;--mute:#a7b3ba;--pri:#46b8a8;--pri-ink:#0d1a18;--ok:#5fd183;--line:#38454d;--warn:#e8b25a}}
+*,*:before,*:after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:20px;min-height:100vh}
+main{max-width:760px;margin:0 auto;padding:12px 14px 90px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:2px solid var(--line)}
+nav button{flex:1;font:inherit;font-weight:700;font-size:16px;padding:10px 4px;border:2px solid var(--line);border-radius:16px;background:var(--bg);color:var(--ink);cursor:pointer}
+nav button .e{display:block;font-size:30px}
+nav button[aria-selected="true"]{background:var(--pri);color:var(--pri-ink);border-color:var(--pri)}
+h1{font-size:26px;margin:8px 0 12px}
+.bar{height:16px;background:var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.task{display:flex;align-items:center;gap:12px;background:var(--card);border:3px solid var(--line);border-radius:22px;padding:12px;margin-bottom:12px}
+.task.done{border-color:var(--ok);opacity:.8}
+.task .main{flex:1;display:flex;align-items:center;gap:14px;background:none;border:0;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0}
+.task .ic{font-size:52px;line-height:1}
+.task .tx{font-size:24px;font-weight:700}
+.task.done .tx{text-decoration:line-through}
+.big{font:inherit;font-weight:800;font-size:20px;min-width:120px;min-height:64px;border-radius:18px;border:0;background:var(--pri);color:var(--pri-ink);cursor:pointer;padding:0 14px}
+.task.done .big{background:var(--ok);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.pic{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:150px;background:var(--card);border:3px solid var(--line);border-radius:22px;font:inherit;color:inherit;cursor:pointer;padding:10px}
+.pic .ic{font-size:60px;line-height:1}
+.pic .tx{font-size:19px;font-weight:700;text-align:center}
+.pic:active,.pic.on{border-color:var(--pri);transform:scale(.97)}
+#say{min-height:70px;background:var(--pri);color:var(--pri-ink);border-radius:20px;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;margin-bottom:14px}
+.menu{display:grid;gap:12px}
+.menu .pic{flex-direction:row;justify-content:flex-start;gap:16px;min-height:100px;padding:14px 20px}
+.menu .tx{font-size:24px}
+.row{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.ghost{font:inherit;font-weight:700;font-size:18px;min-height:52px;padding:0 18px;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.mem{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{aspect-ratio:1;font-size:56px;border-radius:20px;border:3px solid var(--line);background:var(--pri);color:var(--pri-ink);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.card.up{background:var(--card);color:var(--ink)}
+.card.found{background:var(--card);border-color:var(--ok)}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.choices .pic{min-height:130px}.choices .ic{font-size:64px}
+.fb{font-size:26px;font-weight:800;text-align:center;min-height:40px;margin:10px 0}
+.cap{color:var(--mute);font-size:16px}
+h2{font-size:22px;margin:22px 0 10px}
+select{font:inherit;font-size:18px;min-height:52px;width:100%;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);padding:0 10px}
+input[type=range]{width:100%;height:36px}
+.srow{background:var(--card);border:3px solid var(--line);border-radius:20px;padding:10px 12px;margin-bottom:10px}
+.srow .t{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;margin-bottom:8px}
+.srow .t .ic{font-size:40px}
+.srow .b{display:flex;gap:8px;flex-wrap:wrap}
+.srow .ghost{min-height:46px;font-size:16px;padding:0 12px}
+.srow.has{border-color:var(--ok)}
+button:focus-visible{outline:4px solid var(--warn);outline-offset:2px}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav role="tablist">
+  <button role="tab" data-v="rutinas"><span class="e">📅</span>Mi día</button>
+  <button role="tab" data-v="hablar"><span class="e">💬</span>Hablar</button>
+  <button role="tab" data-v="juegos"><span class="e">🎲</span>Juegos</button>
+  <button role="tab" data-v="ajustes"><span class="e">⚙️</span>Ajustes</button>
+</nav>
+<script>
+const $=s=>document.querySelector(s), app=$('#app');
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let cfg=store.get('cfg',{v:'',r:.9}),cur='',voice=null;
+function pickVoice(){const vs=speechSynthesis.getVoices();voice=vs.find(v=>v.name===cfg.v)||vs.find(v=>v.lang.toLowerCase().startsWith('es'))||null}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=()=>{pickVoice();if(cur==='ajustes')ajustes()}}
+function speak(t){
+  if(window.AndroidTTS){AndroidTTS.speak(t,cfg.r);return}
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);u.lang='es-ES';if(voice)u.voice=voice;u.rate=cfg.r;
+  speechSynthesis.speak(u);
+}
+let ac;
+function beep(f=660,d=.15){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.value=.15;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+
+/* ---------- Datos ---------- */
+const TAREAS=[
+ ['🛏️','Levantarme'],['🪥','Lavarme los dientes'],['🥣','Desayunar'],['👕','Vestirme'],
+ ['🏃','Hacer ejercicio'],['🍽️','Comer'],['😴','Descansar'],['🚿','Ducharme'],['🌙','Ir a dormir']];
+const FRASES=[
+ ['💧','Tengo sed'],['🍎','Tengo hambre'],['😴','Estoy cansado'],['⚽','Quiero jugar'],
+ ['🚽','Necesito ir al baño'],['🤕','Me duele'],['✅','Sí'],['❌','No'],
+ ['🆘','Necesito ayuda'],['🙏','Gracias'],['😀','Estoy contento'],['😢','Estoy triste'],
+ ['📺','Quiero ver la tele'],['🎵','Quiero música'],['🤗','Quiero un abrazo'],['🏠','Quiero ir a casa']];
+const SONIDOS=[
+ ['🐶','el perro','¡Guau guau!'],['🐱','el gato','¡Miau miau!'],['🐮','la vaca','¡Muuu!'],
+ ['🚗','el coche','¡Brum brum!'],['🦆','el pato','¡Cuac cuac!'],['🔔','la campana','¡Din don!'],
+ ['🐑','la oveja','¡Beee!'],['🚑','la ambulancia','¡Ni no ni no!']];
+
+/* ---------- Vistas ---------- */
+function show(v){
+  document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  if(window.AndroidTTS)AndroidTTS.stop();else if(window.speechSynthesis)speechSynthesis.cancel();
+  cur=v;({rutinas,hablar,juegos,memoria,sonidos,ajustes})[v]();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+
+function rutinas(){
+  const hoy=new Date().toISOString().slice(0,10);
+  let st=store.get('rutinas',{});if(st.dia!==hoy)st={dia:hoy,hechas:[]};
+  const draw=()=>{
+    const n=st.hechas.length;
+    app.innerHTML=`<h1>Mi día</h1>
+      <div class="bar" role="progressbar" aria-valuenow="${n}" aria-valuemax="${TAREAS.length}"><i style="width:${n/TAREAS.length*100}%"></i></div>
+      <div class="cap" style="margin:-6px 0 12px">${n} de ${TAREAS.length} hechas</div>`+
+      TAREAS.map((t,i)=>{const d=st.hechas.includes(i);return `<div class="task ${d?'done':''}">
+        <button class="main" data-s="${i}" aria-label="Escuchar: ${t[1]}"><span class="ic">${t[0]}</span><span class="tx">${t[1]}</span></button>
+        <button class="big" data-d="${i}">${d?'✔ Hecho':'Hecho'}</button></div>`}).join('');
+    app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>speak(TAREAS[b.dataset.s][1]));
+    app.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.d,k=st.hechas.indexOf(i);
+      if(k<0){st.hechas.push(i);beep(880);speak('¡Muy bien!')}else st.hechas.splice(k,1);
+      store.set('rutinas',st);draw();
+    });
+  };
+  draw();
+}
+
+function hablar(){
+  app.innerHTML=`<h1>Hablar</h1><div id="say" aria-live="polite">Toca un dibujo</div>
+   <div class="grid">${FRASES.map((f,i)=>`<button class="pic" data-i="${i}"><span class="ic">${f[0]}</span><span class="tx">${f[1]}</span></button>`).join('')}</div>`;
+  app.querySelectorAll('.pic').forEach(b=>b.onclick=()=>{
+    const f=FRASES[b.dataset.i];$('#say').textContent=f[0]+' '+f[1];
+    app.querySelectorAll('.pic').forEach(x=>x.classList.remove('on'));b.classList.add('on');speak(f[1]);
+  });
+}
+
+function juegos(){
+  app.innerHTML=`<h1>Juegos</h1><div class="menu">
+   <button class="pic" data-g="memoria"><span class="ic">🃏</span><span class="tx">Parejas</span></button>
+   <button class="pic" data-g="sonidos"><span class="ic">👂</span><span class="tx">¿Qué suena?</span></button></div>`;
+  app.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>show(b.dataset.g));
+}
+
+function memoria(){
+  const ic=['🐶','🐱','🚗','🍎','⚽','🌞'];
+  let cards=[...ic,...ic].sort(()=>Math.random()-.5).map((e,i)=>({e,i,up:false,ok:false}));
+  let sel=[],lock=false;
+  const draw=()=>{
+    const win=cards.every(c=>c.ok);
+    app.innerHTML=`<h1>Parejas</h1><div class="row"><button class="ghost" id="back">← Juegos</button><button class="ghost" id="new">Otra vez</button></div>
+     <div class="fb">${win?'🎉 ¡Muy bien!':''}</div>
+     <div class="mem">${cards.map(c=>`<button class="card ${c.up||c.ok?'up':''} ${c.ok?'found':''}" data-i="${c.i}" aria-label="${c.up||c.ok?c.e:'carta'}">${c.up||c.ok?c.e:'❓'}</button>`).join('')}</div>`;
+    $('#back').onclick=()=>show('juegos');$('#new').onclick=memoria;
+    if(win){beep(988,.3);speak('¡Muy bien!');return}
+    app.querySelectorAll('.card').forEach(b=>b.onclick=()=>{
+      const c=cards[b.dataset.i];if(lock||c.up||c.ok)return;
+      c.up=true;sel.push(c);beep(520,.08);draw();
+      if(sel.length===2){
+        lock=true;
+        const [a,b2]=sel;
+        if(a.e===b2.e){a.ok=b2.ok=true;a.up=b2.up=false;sel=[];lock=false;beep(880);setTimeout(draw,300)}
+        else setTimeout(()=>{a.up=b2.up=false;sel=[];lock=false;draw()},1000);
+      }
+    });
+  };
+  draw();
+}
+
+function sonidos(){
+  let ans,opts,done=false,puntos=0;
+  const nueva=()=>{
+    opts=[...SONIDOS].sort(()=>Math.random()-.5).slice(0,3);ans=opts[Math.floor(Math.random()*3)];done=false;draw();
+    setTimeout(()=>playSound(ans),400);
+  };
+  const draw=(msg='')=>{
+    app.innerHTML=`<h1>¿Qué suena?</h1><div class="row"><button class="ghost" id="back">← Juegos</button><span class="cap">Aciertos: ${puntos}</span></div>
+     <div class="row"><button class="big" id="oir" style="flex:1">🔊 Escuchar</button></div>
+     <div class="fb" aria-live="polite">${msg}</div>
+     <div class="choices">${opts.map((o,i)=>`<button class="pic" data-i="${i}" aria-label="${o[1]}"><span class="ic">${o[0]}</span></button>`).join('')}</div>
+     ${done?'<div class="row" style="margin-top:14px"><button class="big" id="sig" style="flex:1">Siguiente ➜</button></div>':''}`;
+    $('#back').onclick=()=>show('juegos');$('#oir').onclick=()=>playSound(ans);
+    if(done)$('#sig').onclick=nueva;
+    app.querySelectorAll('.pic').forEach(b=>b.onclick=()=>{
+      const o=opts[b.dataset.i];
+      if(o===ans){if(!done){puntos++;done=true;beep(880,.25);speak('¡Muy bien! Es '+o[1]);draw('🎉 ¡Muy bien!')}}
+      else{beep(200,.25);speak('Prueba otra vez');draw('Prueba otra vez')}
+    });
+  };
+  nueva();
+}
+
+/* ---------- Sonidos propios (IndexedDB) ---------- */
+const DB=()=>new Promise((res,rej)=>{const r=indexedDB.open('snd',1);r.onupgradeneeded=()=>r.result.createObjectStore('a');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function dbOp(mode,fn){try{const d=await DB();return await new Promise((res,rej)=>{const t=d.transaction('a',mode);const rq=fn(t.objectStore('a'));t.oncomplete=()=>res(rq&&rq.result);t.onerror=()=>rej(t.error)})}catch(e){return null}}
+const dbPut=(k,v)=>dbOp('readwrite',o=>o.put(v,k)), dbGet=k=>dbOp('readonly',o=>o.get(k)), dbDel=k=>dbOp('readwrite',o=>o.delete(k));
+let curAudio=null;
+async function playSound(item){
+  const b=await dbGet(item[1]);
+  if(b){try{curAudio&&curAudio.pause();curAudio=new Audio(URL.createObjectURL(b));await curAudio.play();return}catch(e){}}
+  speak(item[2]);
+}
+let rec=null;
+async function grabar(item,btn,done,msg){
+  if(rec){rec.stop();return}
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true}),ch=[];
+    const r=rec=new MediaRecorder(st);
+    r.ondataavailable=e=>ch.push(e.data);
+    r.onstop=async()=>{st.getTracks().forEach(t=>t.stop());rec=null;if(ch.length)await dbPut(item[1],new Blob(ch,{type:ch[0].type||'audio/webm'}));done()};
+    r.start();btn.textContent='⏹ Detener';setTimeout(()=>{if(rec===r)r.stop()},6000);
+  }catch(e){msg('No se pudo usar el micrófono aquí. Prueba con "Elegir archivo".')}
+}
+
+function ajustes(){
+  const vs=('speechSynthesis' in window)?speechSynthesis.getVoices():[];
+  const es=vs.filter(v=>v.lang.toLowerCase().startsWith('es')),lista=es.length?es:vs;
+  app.innerHTML=`<h1>Ajustes</h1>
+   <h2 style="margin-top:0">Voz</h2>
+   <div class="row"><select id="vz" aria-label="Voz">${lista.length?lista.map(v=>`<option value="${v.name}" ${voice&&voice.name===v.name?'selected':''}>${v.name} (${v.lang})</option>`).join(''):'<option>Voz predeterminada del dispositivo</option>'}</select></div>
+   <label class="cap">Velocidad: más lenta ← → más rápida<input type="range" id="vr" min=".5" max="1.3" step=".1" value="${cfg.r}"></label>
+   <div class="row"><button class="ghost" id="vt">🔊 Probar voz</button></div>
+   <h2>Sonidos del juego</h2>
+   <div class="cap" id="msg" style="margin-bottom:10px">Elige un archivo de audio o graba un sonido. Si no hay uno, se usa la voz.</div>
+   ${SONIDOS.map((s,i)=>`<div class="srow" id="r${i}"><div class="t"><span class="ic">${s[0]}</span>${s[1]}<span class="cap" id="o${i}"></span></div>
+    <div class="b"><button class="ghost" data-a="p" data-i="${i}">▶ Probar</button>
+    <label class="ghost" style="display:inline-flex;align-items:center">📁 Elegir archivo<input type="file" accept="audio/*" hidden data-i="${i}"></label>
+    <button class="ghost" data-a="g" data-i="${i}">🎙️ Grabar</button>
+    <button class="ghost" data-a="q" data-i="${i}" hidden>🗑️ Quitar</button></div></div>`).join('')}`;
+  const msg=t=>{$('#msg').textContent=t};
+  $('#vz').onchange=e=>{cfg.v=e.target.value;store.set('cfg',cfg);pickVoice()};
+  $('#vr').oninput=e=>{cfg.r=+e.target.value;store.set('cfg',cfg)};
+  $('#vt').onclick=()=>speak('Hola, esta es mi voz. Tengo sed y quiero jugar.');
+  const mark=async i=>{const has=!!(await dbGet(SONIDOS[i][1]));$('#r'+i).classList.toggle('has',has);$('#o'+i).textContent=has?'✔ propio':'';$('#r'+i).querySelector('[data-a=q]').hidden=!has};
+  SONIDOS.forEach((_,i)=>mark(i));
+  app.querySelectorAll('[data-a]').forEach(b=>b.onclick=async()=>{
+    const i=+b.dataset.i,it=SONIDOS[i];
+    if(b.dataset.a==='p')playSound(it);
+    else if(b.dataset.a==='q'){await dbDel(it[1]);mark(i)}
+    else grabar(it,b,()=>mark(i),msg);
+  });
+  app.querySelectorAll('input[type=file]').forEach(f=>f.onchange=async()=>{
+    const file=f.files[0],i=+f.dataset.i;if(!file)return;
+    const ok=await dbPut(SONIDOS[i][1],file);
+    msg(ok===null?'No se pudo guardar el sonido en este navegador.':'Sonido guardado.');mark(i);
+  });
+}
+show('rutinas');
+</script>
+</body>
+</html>
